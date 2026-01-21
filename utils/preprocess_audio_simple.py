@@ -199,7 +199,7 @@ class SimpleAudioPreprocessor:
         else:
             return audio
 
-    def preprocess_audio_simple(self, audio_path: str) -> np.ndarray:
+    def preprocess_audio(self, audio_path: str) -> np.ndarray:
         """
         Complete simplified preprocessing pipeline.
 

@@ -69,7 +69,7 @@ class SimpleAudioDataset(Dataset):
 
         try:
             # Extract simplified features
-            features = self.preprocessor.preprocess_audio_simple(audio_path)
+            features = self.preprocessor.preprocess_audio(audio_path)
 
             # Convert to tensor
             features_tensor = torch.from_numpy(features).float()
