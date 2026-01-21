@@ -1417,21 +1417,22 @@ def main():
         else:
             result = st.session_state.result
             
-            if 'report_path' in result and Path(result['report_path']).exists():
+            if 'report_path' in result and result['report_path'] is not None and Path(result['report_path']).exists():
                 st.success("✅ Report generated successfully!")
-                
+
                 # Download button
                 with open(result['report_path'], 'rb') as f:
                     st.download_button(
-                        label="📥 Download PDF Report",
+                        label="📥 Download Report",
                         data=f,
                         file_name=Path(result['report_path']).name,
-                        mime="application/pdf"
+                        mime="text/plain"
                     )
-                
+
                 st.info(f"📄 Report saved at: `{result['report_path']}`")
             else:
-                st.warning("Report generation is in progress or failed. Please try analyzing again.")
+                st.warning("⚠️ Report generation failed. Analysis completed but report could not be created.")
+                st.info("💡 The analysis results are still available above. Try analyzing again if you need a report.")
     
     with tab4:
         # Help section with comprehensive guide
