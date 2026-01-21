@@ -17,8 +17,11 @@ import sys
 sys.path.append(str(Path(__file__).parent.parent))
 from model.video_model import CNNRNNDeepfakeDetector, get_model
 from model.audio_model import AudioDeepfakeDetector, get_audio_model
+from model.audio_model_simple import SimpleAudioClassifier
 from utils.preprocess_video import VideoPreprocessor
 from utils.preprocess_audio import AudioPreprocessor
+from utils.preprocess_audio_simple import SimpleAudioPreprocessor
+from utils.report_generator import SimpleReportGenerator
 from utils.optimization import ModelOptimizer, ModelCache, optimize_model_for_deployment
 
 logger = logging.getLogger(__name__)
@@ -141,29 +144,46 @@ class DeepfakeDetector:
     def _load_audio_model(self, model_path: str):
         """Load audio model."""
         logger.info(f"Loading audio model from {model_path}")
-        
-        # Create model
-        self.audio_model = get_audio_model(model_type='gru')
-        
-        # Load weights
+
+        # Load state dict first to check model type
         try:
             state_dict = torch.load(model_path, map_location=self.device)
-            self.audio_model.load_state_dict(state_dict)
-            logger.info("Audio model loaded successfully")
         except Exception as e:
-            logger.warning(f"Could not load audio weights: {e}. Using random initialization.")
-        
+            logger.error(f"Could not load model file: {e}")
+            return
+
+        # Try loading as SimpleAudioClassifier first
+        try:
+            # Check if it's a simple model by looking at the state dict keys
+            if any('classifier' in key for key in state_dict.keys()):
+                logger.info("Detected SimpleAudioClassifier model")
+                self.audio_model = SimpleAudioClassifier()
+                self.audio_model.load_state_dict(state_dict)
+                self.audio_preprocessor = SimpleAudioPreprocessor()
+                logger.info("SimpleAudioClassifier loaded successfully")
+            else:
+                raise ValueError("Not a simple model")
+
+        except Exception as e:
+            # Try loading as original AudioDeepfakeDetector
+            try:
+                logger.info("Trying to load as AudioDeepfakeDetector")
+                self.audio_model = get_audio_model(model_type='gru')
+                self.audio_model.load_state_dict(state_dict)
+                self.audio_preprocessor = AudioPreprocessor()
+                logger.info("AudioDeepfakeDetector loaded successfully")
+            except Exception as e2:
+                logger.error(f"Could not load audio model: Simple: {e}, Original: {e2}")
+                return
+
         # Move to device
         self.audio_model.to(self.device)
         self.audio_model.eval()
-        
+
         # Apply optimizations
         if self.use_quantization:
             optimizer = ModelOptimizer(self.audio_model)
             self.audio_model = optimizer.quantize_model('dynamic')
-        
-        # Initialize preprocessor
-        self.audio_preprocessor = AudioPreprocessor()
     
     def _get_file_hash(self, file_path: str) -> str:
         """Get hash of file for caching."""
@@ -338,12 +358,21 @@ class DeepfakeDetector:
         
         return result
     
-    def _generate_report(self, result: Dict, report_path: Optional[str] = None, 
+    def _generate_report(self, result: Dict, report_path: Optional[str] = None,
                          visualization_dir: Optional[str] = None) -> str:
-        """Generate PDF report (placeholder for actual implementation)."""
-        # This would integrate with utils/report_generator.py
-        logger.info("Report generation requested (placeholder)")
-        return report_path or "reports/report.pdf"
+        """Generate report using SimpleReportGenerator."""
+        try:
+            generator = SimpleReportGenerator()
+            generated_path = generator.generate_report(result, report_path, visualization_dir)
+            if generated_path:
+                logger.info(f"Report generated successfully: {generated_path}")
+                return generated_path
+            else:
+                logger.error("Report generation failed")
+                return None
+        except Exception as e:
+            logger.error(f"Error generating report: {e}")
+            return None
     
     def get_model_info(self) -> Dict:
         """Get information about loaded models."""

@@ -102,8 +102,8 @@ class SimpleAudioPreprocessor:
                     return audio, framerate
 
             except Exception as e2:
-                logger.error(f"All audio loading methods failed for {audio_path}: Pydub: {e}, WAV: {e2}")
-                # Return dummy audio
+                logger.warning(f"Audio loading failed for {audio_path}: Pydub: {e}, WAV: {e2} - using dummy data")
+                # Return dummy audio to continue training
                 return np.zeros(self.target_length, dtype=np.float32), self.sample_rate
 
     def extract_basic_features(self, audio: np.ndarray) -> np.ndarray:

@@ -40,10 +40,10 @@ class AudioPreprocessor:
     def load_audio(self, audio_path: str) -> Tuple[np.ndarray, int]:
         """
         Load audio file with fallback handling for Windows security policies.
-
+        
         Args:
             audio_path: Path to audio file
-
+        
         Returns:
             audio: Audio signal
             sr: Sample rate

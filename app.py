@@ -10,6 +10,7 @@ from pathlib import Path
 import sys
 from datetime import datetime
 import plotly.graph_objects as go
+import torch
 
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent))
@@ -29,99 +30,170 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Professional Enterprise-Grade UI Design System
+# Ultra-Modern Enterprise UI Design System
 st.markdown("""
 <style>
-    /* ===== PROFESSIONAL DESIGN SYSTEM ===== */
+    /* ===== VIOLET-BASED DESIGN SYSTEM ===== */
 
-    /* CSS Custom Properties for Consistency */
+    /* CSS Custom Properties for Violet Theme */
     :root {
-        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #a855f7 25%, #c084fc 50%, #ddd6fe 75%, #e879f9 100%);
+        --secondary-gradient: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #c4b5fd 100%);
+        --success-gradient: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+        --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%);
+        --danger-gradient: linear-gradient(135deg, #ef4444 0%, #f87171 50%, #fca5a5 100%);
+        --glass-gradient: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(196, 181, 253, 0.05) 100%);
+        --violet-glow: 0 0 20px rgba(139, 92, 246, 0.3);
+        --violet-accent: rgba(139, 92, 246, 0.1);
 
         --surface-primary: #ffffff;
-        --surface-secondary: #f8fafc;
-        --surface-tertiary: #f1f5f9;
-        --surface-accent: #e0f2fe;
+        --surface-secondary: #faf5ff;
+        --surface-tertiary: #f3e8ff;
+        --surface-glass: rgba(255, 255, 255, 0.08);
+        --surface-accent: rgba(139, 92, 246, 0.05);
 
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --text-muted: #94a3b8;
-        --text-accent: #0f172a;
+        --text-primary: #1e1b4b;
+        --text-secondary: #5b21b6;
+        --text-muted: #7c3aed;
+        --text-accent: #581c87;
+        --text-violet: #7c3aed;
 
-        --border-radius-sm: 8px;
-        --border-radius-md: 12px;
-        --border-radius-lg: 16px;
-        --border-radius-xl: 24px;
-        --border-radius-full: 9999px;
+        --border-radius-sm: 12px;
+        --border-radius-md: 16px;
+        --border-radius-lg: 20px;
+        --border-radius-xl: 28px;
+        --border-radius-full: 50%;
 
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        --shadow-sm: 0 2px 8px rgba(139, 92, 246, 0.1);
+        --shadow-md: 0 8px 24px rgba(139, 92, 246, 0.15);
+        --shadow-lg: 0 16px 40px rgba(139, 92, 246, 0.2);
+        --shadow-xl: 0 24px 64px rgba(139, 92, 246, 0.25);
+        --shadow-2xl: 0 32px 80px rgba(139, 92, 246, 0.3);
+        --shadow-neumorphism: inset 0 2px 4px rgba(196, 181, 253, 0.2), inset 0 -2px 4px rgba(139, 92, 246, 0.1), 0 4px 12px rgba(139, 92, 246, 0.15);
 
-        --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-normal: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
-    /* ===== LAYOUT & CONTAINER ===== */
+    /* ===== VIOLET LAYOUT & CONTAINER ===== */
 
     .main {
-        background: var(--surface-secondary);
+        background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 25%, #a855f7 50%, #c084fc 75%, #ddd6fe 100%);
         background-attachment: fixed;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+        min-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .main::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+            radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.2) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.2) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(196, 181, 253, 0.2) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: -2;
     }
 
     .block-container {
         padding: 2rem 3rem;
         max-width: 1400px;
         margin: 0 auto;
-        background: var(--surface-primary);
+        background: var(--glass-gradient);
         border-radius: var(--border-radius-xl);
         box-shadow: var(--shadow-2xl);
-        border: 1px solid rgba(148, 163, 184, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        position: relative;
+        overflow: visible;
+        min-height: fit-content;
     }
 
-    /* ===== TYPOGRAPHY ===== */
+    .block-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    }
+
+    /* ===== ADVANCED TYPOGRAPHY ===== */
 
     .hero-title {
-        font-size: 3.8rem;
-        font-weight: 800;
+        font-size: 4.2rem;
+        font-weight: 900;
         background: var(--primary-gradient);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         text-align: center;
-        padding: 2rem 0 1rem 0;
+        padding: 2.5rem 0 1.5rem 0;
         margin: 0;
-        letter-spacing: -0.02em;
-        line-height: 1.1;
-        animation: fadeInUp 1s ease-out;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+        text-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+        animation: fadeInUp 1.2s ease-out, violet-glow 2s ease-in-out infinite alternate;
+        position: relative;
+    }
+
+    .hero-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 4px;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+        animation: slideInFromCenter 1.5s ease-out 0.8s both;
     }
 
     .hero-subtitle {
         text-align: center;
-        color: var(--text-secondary);
-        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.35rem;
         font-weight: 500;
-        margin: 0 0 3rem 0;
-        line-height: 1.6;
-        max-width: 600px;
+        margin: 0 0 3.5rem 0;
+        line-height: 1.7;
+        max-width: 700px;
         margin-left: auto;
         margin-right: auto;
-        animation: fadeIn 1s ease-out 0.3s both;
+        animation: fadeIn 1.2s ease-out 0.5s both;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem 2rem;
+        border-radius: var(--border-radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: var(--shadow-neumorphism);
     }
 
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
         }
         to {
             opacity: 1;
@@ -129,9 +201,38 @@ st.markdown("""
         }
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+    @keyframes violet-glow {
+        from {
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.3));
+        }
+        to {
+            filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.6));
+        }
+    }
+
+    @keyframes slideInFromCenter {
+        from {
+            width: 0;
+            opacity: 0;
+        }
+        to {
+            width: 120px;
+            opacity: 1;
+        }
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse-glow {
+        0%, 100% {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.6);
+        }
     }
 
     /* ===== COMPONENTS ===== */
@@ -196,6 +297,7 @@ st.markdown("""
         background-clip: text;
         margin: 0.5rem 0;
         line-height: 1;
+        text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
     }
 
     .metric-label {
@@ -220,8 +322,8 @@ st.markdown("""
     }
 
     [data-testid="stFileUploader"]:hover {
-        border-color: #667eea;
-        background: var(--surface-accent);
+        border-color: #7c3aed;
+        background: var(--violet-accent);
         transform: scale(1.01);
         box-shadow: var(--shadow-lg);
     }
@@ -387,8 +489,8 @@ st.markdown("""
 
     .stTabs [data-baseweb="tab"]:hover {
         background: var(--surface-primary);
-        border-color: #667eea;
-        color: #667eea;
+        border-color: #7c3aed;
+        color: #7c3aed;
         transform: translateY(-1px);
         box-shadow: var(--shadow-md);
     }
@@ -515,6 +617,52 @@ st.markdown("""
         font-size: 0.95rem;
     }
 
+    /* ===== SCROLLING & OVERFLOW FIXES ===== */
+
+    html, body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        scroll-behavior: smooth;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    [data-testid="stAppViewContainer"] {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    [data-testid="stVerticalBlock"] {
+        overflow-y: visible !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Ensure content can scroll */
+    .main > div {
+        overflow-y: visible !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Streamlit specific fixes */
+    .stApp {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    .stApp > div {
+        overflow-y: visible !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Fix for any fixed elements that might block scrolling */
+    [data-testid="stSidebar"] {
+        overflow-y: auto !important;
+    }
+
     /* ===== RESPONSIVE DESIGN ===== */
 
     @media (max-width: 768px) {
@@ -637,27 +785,60 @@ if 'detector' not in st.session_state:
 def initialize_detector():
     """Initialize the deepfake detector with models."""
     model_dir = Path('model')
-    
+
     video_model_path = model_dir / 'deepfake_video_model.pt'
-    audio_model_path = model_dir / 'deepfake_audio_model.pt'
-    
-    # Check if models exist
+
+    # Check for audio models (try multiple possible names)
+    audio_model_paths = [
+        model_dir / 'deepfake_audio_model.pt',
+        model_dir / 'simple_audio_model.pt',
+        model_dir / 'simple_audio_model_clean.pt',
+        model_dir / 'best_audio_model.pt'
+    ]
+
+    audio_model = None
+    for path in audio_model_paths:
+        if path.exists():
+            audio_model = str(path)
+            break
+
+    # Check if video model exists
     video_model = str(video_model_path) if video_model_path.exists() else None
-    audio_model = str(audio_model_path) if audio_model_path.exists() else None
-    
+
     if video_model is None and audio_model is None:
-        st.warning("⚠️ No trained models found. Please train models first or use demo mode.")
+        st.error("❌ No trained models found. Please train your models first using the training scripts.")
+        st.info("💡 Run `python train_video_model.py` for video detection and/or `python train_audio_simple.py` for audio detection.")
         return None
-    
+
+    # Show status of available models
+    if video_model is not None:
+        st.success("✅ Video model detected and ready for analysis!")
+    else:
+        st.warning("⚠️ Video model not found. Video analysis will not be available.")
+
+    if audio_model is not None:
+        model_name = Path(audio_model).name
+        st.success(f"✅ Audio model detected ({model_name}) and ready for analysis!")
+    else:
+        st.info("ℹ️ Audio model not found. Audio analysis will not be available.")
+
     try:
         detector = DeepfakeDetector(
             video_model_path=video_model,
             audio_model_path=audio_model,
-            device='cuda'
+            device='cuda' if torch.cuda.is_available() else 'cpu'
         )
+
+        # Test that the detector was created successfully
+        if detector.video_model is None and detector.audio_model is None:
+            st.error("❌ Failed to load any models. Please check model file integrity.")
+            return None
+
         return detector
     except Exception as e:
-        st.error(f"Error initializing detector: {str(e)}")
+        st.error(f"❌ Error initializing detector: {str(e)}")
+        st.info("💡 Make sure your model files are not corrupted and PyTorch is properly installed.")
+        st.info("💡 Try retraining your models if this error persists.")
         return None
 
 
@@ -701,11 +882,54 @@ def create_confidence_gauge(confidence: float, prediction: str):
 
 def main():
     """Main application function."""
-    
+
+    # Welcome message on first run
+    if 'initialized' not in st.session_state:
+        st.session_state.initialized = True
+        st.success("🚀 **Deepfake Detection System Initialized Successfully!**")
+
     # Professional Header
     st.markdown('<h1 class="hero-title">AI Deepfake Detection</h1>', unsafe_allow_html=True)
     st.markdown('<p class="hero-subtitle">Enterprise-grade deepfake detection powered by advanced CNN-RNN neural networks and computer vision</p>', unsafe_allow_html=True)
     
+    # System status indicator
+    system_ready = True
+    status_message = "🟢 System Ready"
+    status_color = "#7c3aed"
+
+    # Check critical components
+    try:
+        import torch
+        torch_ok = True
+    except ImportError:
+        torch_ok = False
+        system_ready = False
+
+    # Check models
+    model_dir = Path('model')
+    video_model_ok = (model_dir / 'deepfake_video_model.pt').exists()
+    audio_model_ok = (model_dir / 'deepfake_audio_model.pt').exists()
+
+    if not torch_ok:
+        status_message = "🔴 PyTorch Missing"
+        status_color = "#ef4444"
+    elif not (video_model_ok or audio_model_ok):
+        status_message = "🟡 Models Missing"
+        status_color = "#f59e0b"
+        system_ready = False
+    elif video_model_ok and not audio_model_ok:
+        status_message = "🟢 Video Ready"
+        status_color = "#10b981"
+    elif audio_model_ok and not video_model_ok:
+        status_message = "🟢 Audio Ready"
+        status_color = "#10b981"
+
+    st.markdown(f"""
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(0,0,0,0.8); color: {status_color}; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.2); pointer-events: none;">
+        {status_message}
+    </div>
+    """, unsafe_allow_html=True)
+
     # Add a visually appealing divider
     st.markdown("---")
     
@@ -723,15 +947,17 @@ def main():
         st.markdown("---")
         st.markdown("### ⚙️ Settings & Info")
         
+
         # Theme toggle with better UI
         theme = st.selectbox(
-            "🎨 Theme", 
+            "🎨 Theme",
             ["Light", "Dark"],
             help="Choose your preferred theme"
         )
         
-        # Professional model status
+        # Professional system status
         st.markdown("### System Status")
+
 
         model_dir = Path('model')
         video_model_exists = (model_dir / 'deepfake_video_model.pt').exists()
@@ -749,9 +975,9 @@ def main():
         else:
             st.markdown("""
             <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0;">
-                <span style="color: #ef4444; font-size: 1.2rem;">●</span>
+                <span style="color: #f59e0b; font-size: 1.2rem;">●</span>
                 <span style="color: #f1f5f9;">Video Model</span>
-                <span style="color: #ef4444; font-weight: 600;">Not Found</span>
+                <span style="color: #f59e0b; font-weight: 600;">Not Trained</span>
             </div>
             """, unsafe_allow_html=True)
 
@@ -767,28 +993,79 @@ def main():
         else:
             st.markdown("""
             <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0;">
-                <span style="color: #ef4444; font-size: 1.2rem;">●</span>
+                <span style="color: #f59e0b; font-size: 1.2rem;">●</span>
                 <span style="color: #f1f5f9;">Audio Model</span>
-                <span style="color: #ef4444; font-weight: 600;">Not Found</span>
+                <span style="color: #f59e0b; font-weight: 600;">Not Trained</span>
             </div>
             """, unsafe_allow_html=True)
         
         # Professional system info
         st.markdown("### System Information")
 
-        import torch
-        device_status = "GPU Accelerated" if torch.cuda.is_available() else "CPU Processing"
-        device_color = "#10b981" if torch.cuda.is_available() else "#f59e0b"
+        # System health check
+        health_checks = []
 
-        st.markdown(f"""
-        <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(203, 213, 225, 0.1);">
-            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                <span style="color: {device_color}; font-size: 1.2rem;">●</span>
-                <span style="color: #f1f5f9; font-weight: 600;">{device_status}</span>
+        # PyTorch check
+        try:
+            import torch
+            torch_version = torch.__version__
+            cuda_available = torch.cuda.is_available()
+            health_checks.append(("PyTorch", True, f"v{torch_version}"))
+        except ImportError:
+            health_checks.append(("PyTorch", False, "Not installed"))
+
+        # Model files check
+        video_model_ok = (model_dir / 'deepfake_video_model.pt').exists()
+        audio_model_ok = (model_dir / 'deepfake_audio_model.pt').exists()
+        health_checks.append(("Video Model", video_model_ok, "Ready" if video_model_ok else "Missing"))
+        health_checks.append(("Audio Model", audio_model_ok, "Ready" if audio_model_ok else "Missing"))
+
+        # GPU status
+        gpu_available = torch.cuda.is_available() if 'torch' in globals() else False
+        health_checks.append(("GPU Acceleration", gpu_available, "Enabled" if gpu_available else "CPU Only"))
+
+        # Display health checks
+        for check_name, status, details in health_checks:
+            color = "#10b981" if status else "#ef4444"
+            icon = "✓" if status else "✗"
+
+            st.markdown(f"""
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin: 0.5rem 0; color: #f1f5f9;">
+                <span style="color: {color}; font-size: 1.1rem; font-weight: bold;">{icon}</span>
+                <span style="flex: 1;">{check_name}</span>
+                <span style="color: #cbd5e1; font-size: 0.9rem;">{details}</span>
             </div>
-            <div style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.5;">
-                <div><strong>PyTorch:</strong> {torch.__version__}</div>
-                <div><strong>Platform:</strong> Professional Edition</div>
+            """, unsafe_allow_html=True)
+
+        # Overall system status
+        critical_issues = sum(1 for _, status, _ in health_checks[:2] if not status)
+        video_available = health_checks[2][1]  # Video Model status
+        audio_available = health_checks[3][1]  # Audio Model status
+
+        if critical_issues == 0:
+            if video_available or audio_available:
+                if video_available and audio_available:
+                    status_message = "System Ready"
+                    status_color = "#10b981"
+                elif video_available:
+                    status_message = "Video Ready"
+                    status_color = "#10b981"
+                else:  # audio_available
+                    status_message = "Audio Ready"
+                    status_color = "#10b981"
+            else:
+                status_message = "Models Missing"
+                status_color = "#f59e0b"
+        else:
+            status_message = "System Issues"
+            status_color = "#ef4444"
+
+        st.markdown("---")
+        st.markdown(f"""
+        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; border: 1px solid rgba(203, 213, 225, 0.1); text-align: center;">
+            <div style="color: {status_color}; font-weight: 600; margin-bottom: 0.5rem;">{status_message}</div>
+            <div style="color: #cbd5e1; font-size: 0.9rem;">
+                {"Ready for analysis" if critical_issues == 0 else "Please resolve issues above"}
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -878,20 +1155,46 @@ def main():
             
             # Analyze button with enhanced styling
             st.markdown("---")
-            
-            col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
-            with col_btn2:
-                analyze_button = st.button("🚀 Analyze File", type="primary", use_container_width=True)
-            
+
+            # Check if models are available before showing analyze button
+            model_dir = Path('model')
+            video_model_path = model_dir / 'deepfake_video_model.pt'
+
+            # Check for audio models (try multiple possible names)
+            audio_model_paths = [
+                model_dir / 'deepfake_audio_model.pt',
+                model_dir / 'simple_audio_model.pt',
+                model_dir / 'simple_audio_model_clean.pt',
+                model_dir / 'best_audio_model.pt'
+            ]
+
+            video_model_exists = video_model_path.exists()
+            audio_model_exists = any(path.exists() for path in audio_model_paths)
+            models_available = video_model_exists or audio_model_exists
+
+            if models_available:
+                col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
+                with col_btn2:
+                    analyze_button = st.button("🚀 Analyze File", type="primary", use_container_width=True)
+            else:
+                st.error("❌ No trained models available. Please train your models first.")
+                st.info("💡 Use the training scripts to create your deepfake detection models.")
+                analyze_button = False
+
             # Save uploaded file when button is clicked
-            if analyze_button:
+            if analyze_button and uploaded_file is not None:
                 upload_dir = Path('uploads')
                 upload_dir.mkdir(exist_ok=True)
                 
+                # Create directories if they don't exist
+                upload_dir.mkdir(exist_ok=True)
+                Path('reports').mkdir(exist_ok=True)
+                Path('static/sample_outputs').mkdir(parents=True, exist_ok=True)
+
                 # Sanitize filename
                 safe_filename = st.session_state.file_validator.sanitize_filename(uploaded_file.name)
                 file_path = upload_dir / safe_filename
-                
+
                 with open(file_path, 'wb') as f:
                     f.write(uploaded_file.getbuffer())
                 
@@ -906,9 +1209,16 @@ def main():
                     
                     # Initialize detector if not already done
                     if st.session_state.detector is None:
-                        with st.spinner("Loading models..."):
-                            st.session_state.detector = initialize_detector()
-                    
+                        with st.spinner("🔄 Loading AI models..."):
+                            try:
+                                st.session_state.detector = initialize_detector()
+                                if st.session_state.detector is None:
+                                    st.error("❌ Failed to initialize detector. Please check model files.")
+                                    return
+                            except Exception as e:
+                                st.error(f"❌ Error loading models: {str(e)}")
+                                return
+
                     if st.session_state.detector is not None:
                         # Analyze file
                         with st.spinner("Analyzing..."):
@@ -932,16 +1242,27 @@ def main():
                             progress_bar.progress(50)
                             
                             start_time = time.time()
-                            
-                            # Detect
-                            result = st.session_state.detector.detect(
-                                file_path=str(file_path),
-                                generate_report=True,
-                                report_path=f"reports/report_{safe_filename.rsplit('.', 1)[0]}.pdf",
-                                visualization_dir="static/sample_outputs"
-                            )
-                            
-                            processing_time = time.time() - start_time
+
+                            try:
+                                # Real detection with enhanced error handling
+                                result = st.session_state.detector.detect(
+                                    file_path=str(file_path),
+                                    generate_report=True,
+                                    report_path=f"reports/report_{safe_filename.rsplit('.', 1)[0]}.pdf",
+                                    visualization_dir="static/sample_outputs"
+                                )
+
+                                if result is None:
+                                    st.error("❌ Detection failed. Please try again or check the file format.")
+                                    return
+
+                                processing_time = time.time() - start_time
+
+                            except Exception as e:
+                                processing_time = time.time() - start_time
+                                st.error(f"❌ Analysis failed: {str(e)}")
+                                st.session_state.activity_logger.log_error(safe_filename, str(e))
+                                return
                             
                             progress_bar.progress(75)
                             status_text.text("Generating visualizations...")
@@ -967,19 +1288,36 @@ def main():
                                 processing_time=processing_time
                             )
                             
+                            # Success message
                             st.success(f"✨ Analysis completed in {processing_time:.2f}s")
-                            
+
                             # Celebration animation
                             st.balloons()
-                            
+
                             # Professional success message
-                            st.success("🎉 Analysis Complete! View your detailed results in the Results tab above.")
+                            st.success("🎉 Analysis Complete! View your AI-powered results in the Results tab above.")
     
     with tab2:
-        st.header("Detection Results")
-        
+        col_title, col_clear = st.columns([3, 1])
+        with col_title:
+            st.header("Detection Results")
+        with col_clear:
+            if st.session_state.result is not None:
+                if st.button("🗑️ Clear Results", help="Clear current analysis results"):
+                    st.session_state.result = None
+                    st.rerun()
+
         if st.session_state.result is None:
-            st.info("👆 Upload and analyze a file to see results here")
+            # Enhanced empty state
+            st.markdown("""
+            <div style="text-align: center; padding: 3rem 2rem; background: var(--surface-glass); border-radius: var(--border-radius-lg); border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
+                <h3 style="color: var(--text-primary); margin: 0 0 1rem 0;">No Results Yet</h3>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 1.1rem;">
+                    Upload and analyze a file to see detailed detection results here
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
             result = st.session_state.result
             
@@ -1001,7 +1339,7 @@ def main():
                     </h1>
                     <div style="display: flex; align-items: center; justify-content: center; gap: 2rem; margin-top: 1.5rem;">
                         <div style="text-align: center;">
-                            <div style="font-size: 3rem; font-weight: 700; color: #667eea;">{confidence * 100:.1f}%</div>
+                            <div style="font-size: 3rem; font-weight: 700; color: #7c3aed;">{confidence * 100:.1f}%</div>
                             <div style="color: #64748b; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Confidence</div>
                         </div>
                         <div style="width: 2px; height: 60px; background: rgba(148, 163, 184, 0.3);"></div>
@@ -1042,23 +1380,34 @@ def main():
                 if result.get('file_type') == 'video' and 'sample_frames' in result:
                     st.markdown("---")
                     st.markdown("### 🎬 Sample Video Frames")
-                    
+
                     frames = result['sample_frames']
-                    if len(frames) > 0:
-                        fig_frames = plot_frame_grid(frames[:9])
-                        st.pyplot(fig_frames)
-                        plt.close()
-                
+                    if frames and len(frames) > 0:
+                        try:
+                            fig_frames = plot_frame_grid(frames[:9])
+                            st.pyplot(fig_frames)
+                            plt.close()
+                        except Exception as e:
+                            st.warning(f"Could not display video frames: {str(e)}")
+                    else:
+                        st.info("No frame data available for visualization")
+
                 elif result.get('file_type') == 'audio' and 'waveform' in result:
                     st.markdown("---")
                     st.markdown("### 🎵 Audio Analysis")
-                    
+
                     audio = result['waveform']
                     sr = result.get('sample_rate', 16000)
-                    
-                    fig_audio = plot_mel_spectrogram(audio, sr)
-                    st.pyplot(fig_audio)
-                    plt.close()
+
+                    if audio is not None and len(audio) > 0:
+                        try:
+                            fig_audio = plot_mel_spectrogram(audio, sr)
+                            st.pyplot(fig_audio)
+                            plt.close()
+                        except Exception as e:
+                            st.warning(f"Could not display audio spectrogram: {str(e)}")
+                    else:
+                        st.info("No audio data available for visualization")
     
     with tab3:
         st.header("PDF Report")
@@ -1177,16 +1526,16 @@ def main():
         <p>Enterprise-grade security solution powered by advanced machine learning</p>
         <div style="display: flex; justify-content: center; gap: 2rem; margin: 1.5rem 0; flex-wrap: wrap;">
             <span style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.9rem;">
-                <span style="color: #667eea;">⚡</span> PyTorch Engine
+                <span style="color: #7c3aed;">⚡</span> PyTorch Engine
             </span>
             <span style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.9rem;">
-                <span style="color: #667eea;">🎯</span> CNN-RNN Models
+                <span style="color: #7c3aed;">🎯</span> CNN-RNN Models
             </span>
             <span style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.9rem;">
-                <span style="color: #667eea;">🔒</span> Enterprise Security
+                <span style="color: #7c3aed;">🔒</span> Enterprise Security
             </span>
             <span style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.9rem;">
-                <span style="color: #667eea;">📊</span> Real-time Analysis
+                <span style="color: #7c3aed;">📊</span> Real-time Analysis
             </span>
         </div>
         <p style="margin-top: 2rem; font-size: 0.85rem; color: #94a3b8;">
